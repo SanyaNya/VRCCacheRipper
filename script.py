@@ -31,60 +31,34 @@ parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(d
 parser.add_argument("-j","--j", type=int,help="how many threads to use(default=4)", required=False, default=4)
 parser.add_argument("-mins","--minsize", type=int,help="mminimum size of avatar in MB(default 0MB)", required=False, default=0)
 parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default="./AssetRipper.exe")
-parser.add_argument("-clsf","--classify", action="store_true",help="dont unpack, only classifu and name", required=False)
+parser.add_argument("-clsf","--classify", action="store_true",help="dont unpack, only classify and name", required=False)
+parser.add_argument("--nounpack", action="store_true", help="Prevent unpacking of assets", required=False)
 args = parser.parse_args()
 
-
-if not args.nonaming:
-    configuration = vrchatapi.Configuration(
-        username = args.username,
-        password = args.password,
-    )
-    
-    #логинимся в аккаунт vrchat для обращения к api
-    api_client = vrchatapi.ApiClient(configuration)
-    api_instance = authentication_api.AuthenticationApi(api_client) 
-    try:
-        # Step 3. Calling getCurrentUser on Authentication API logs you in if the user isn't already logged in.
-        current_user = api_instance.get_current_user()
-    except ValueError as e:
-        # Step 3.5. Calling verify2fa if the account has 2FA enabled
-        api_instance.verify2_fa_email_code(two_factor_email_code=TwoFactorEmailCode(input("2FA Code: ")))
-        current_user = api_instance.get_current_user()
-    except UnauthorizedException as e:
-        if UnauthorizedException.status == 200:
-            # Step 3.5. Calling verify2fa if the account has 2FA enabled
-            authentication_api.verify2_fa(two_factor_auth_code=TwoFactorAuthCode(input("2FA Code: ")))
-            current_user = authentication_api.get_current_user()
-        else:
-            print("Exception when calling API: %s\n", e)
-    except vrchatapi.ApiException as e:
-        print("Exception when calling API: %s\n", e)
-
-
-    #все, залогинились, идем дальше
-
+avatarIdWithName = []
 pathes = []
 valid = []
 cnt =0
 ctr =0 
 lock = Lock()
 
-pattern_a=re.compile(rb"prefab-id-v1_avtr_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
+pattern_a=re.compile(rb"avtr_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
 pattern_w=re.compile(rb"wrld_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
+missing_finalAviChar = re.compile(rb"avtr_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{11})")
 def get_id(file):
     with open(file,"rb") as f:
         s=f.read()
         res=pattern_a.findall(s)
-        if len(res)==2:
+        missing = missing_finalAviChar.findall(s)
+        if len(res)>=1:
             return "avtr_"+str(res[0])[2:-1:]
         else:
             try:
                 return "wrld_"+str(pattern_w.findall(s)[0])[2:-1:]
             except:
+                if len(missing) > 0:
+                    print("Missing final avi character!")
                 return None
-
-
 
 def getCachePath(): #ищем путь к кешу и если не находи, то кидаем эксепшон
     path = os.getenv('APPDATA')
@@ -121,21 +95,6 @@ def goodbye():                      #функция выхода, выходим
     print("CacheRipper Finished... Goodbye!")
 atexit.register(goodbye)        #биндим эту функцию на выход
 
-
-if args.input == None:
-    cacheDir=getCachePath()+"\\"
-else:  
-    cacheDir=args.input+"\\"
-outputDir =args.output
-assetripperPath = args.assetripper
-asr = Path(assetripperPath)
-if asr.exists():
-    pass
-else:
-    print("Cant find assetripper.exe! to get it download it from https://github.com/AssetRipper/AssetRipper/releases/tag/0.2.4.0 , unpack zip and put this script into extracted folder")
-    raise FileNotFoundError("Cant find AssetRipper! Put this script into AssetRipper folder, or use '-asr [path to AssetRipper.exe]'")
-
-
 def get_valid_filename(s):          #превращаем имена в нормальные
     s = str(s).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
@@ -155,6 +114,7 @@ def getname_a(id):                    #тут мы обращаемся к api �
                 name =i.split(":")[1][2:-2]
                 break
         #print(name)
+        avatarIdWithName.append([avatar_id, name])
         return name
     except vrchatapi.ApiException as e:
         #print(f"Exception when calling API: {e}")
@@ -203,6 +163,11 @@ def exportIt():
     #print(valid)
 
     print(f"found {len(valid)} files")
+
+    # check if export path exists and make if it doesn't
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
+
     for i in range(len(valid)):         #переименовываем файл аватара __data  в .vrca и копируем в папку для экспорта
         name=get_id(valid[i])
         if name == None:
@@ -223,7 +188,7 @@ def unpackIt():
         for i in range(cnt):         #создаем папки и распаковываем туда .vrca с помощью ассетриппера
             #split by threads:
             tasks[i%(args.j)].append(i)
-            print(tasks[0])
+            #print(tasks[0]) # seems to just print a bunch of numbers?
             #print(outputDir+f"\exported\{i}")
             try:
                 os.mkdir(outputDir+f"\exported\{ld[i]}")
@@ -233,27 +198,27 @@ def unpackIt():
                 os.mkdir(outputDir+"\exported")
                 os.mkdir(outputDir+f"\exported\{ld[i]}")
             #print([assetripperDir, dst,f'-o {outputDir}\exported\{i}'])
-        for l in range(args.j):
-            thr.append(Thread(target=run_asr,args=[tasks[l],ld]))
-            thr[l].start()
-        for x in range(args.j):
-            thr[x].join()
+            for l in range(args.j):
+                thr.append(Thread(target=run_asr,args=[tasks[l],ld]))
+                thr[l].start()
+            for x in range(args.j):
+                thr[x].join()
         #print(f"Unpacked:{procent:0.2f}% ({i+1} files)")
 
 
 def nameIt():
     for f in os.listdir(outputDir):
         print(f) #из распакованных папок берем avtr_id, через vrchat api запрашиваем имя аватара, если получаем ответ то переименовываем папку
-        #if str(f).startswith("avtr"):
-        avatar_name = getname_a(f)
-        if(avatar_name != None):
-            try:
-                print(f+" name: "+avatar_name)
-                os.rename(outputDir+"\\"+f, outputDir+"\\"+get_valid_filename(avatar_name))
-            except PermissionError as e:
-                pass
-            except FileExistsError as e:
-                pass
+        if str(f).startswith("avtr_"):
+            avatar_name = getname_a(f)
+            if(avatar_name != None):
+                try:
+                    print(f+" name: "+avatar_name)
+                    os.rename(outputDir+"\\"+f, outputDir+"\\"+get_valid_filename(avatar_name))
+                except PermissionError as e:
+                    pass
+                except FileExistsError as e:
+                    pass
 
 def classify(src):
     avat = src + "\ExportedProject\Assets\Avatar"
@@ -310,13 +275,68 @@ def classifyIt():
         except Exception as e:
             pass
 
-       
 
-print("strating...(This Might take a while.....)")
+print("starting...(This Might take a while.....)")
+
+#check for assetripper BEFORE Login
+if args.input == None:
+    cacheDir=getCachePath()+"\\"
+else:  
+    cacheDir=args.input+"\\"
+outputDir =args.output
+assetripperPath = args.assetripper
+dontUnpackAssets = args.nounpack
+asr = Path(assetripperPath)
+if asr.exists() or dontUnpackAssets:
+    pass
+else:
+    print("Cant find assetripper.exe! to get it download it from https://github.com/AssetRipper/AssetRipper/releases/0.3.0.5 , unpack zip and put this script into extracted folder")
+    raise FileNotFoundError("Cant find AssetRipper! Put this script into AssetRipper folder, or use '-asr [path to AssetRipper.exe]'")
+
+#vrc login
+if not args.nonaming:
+    configuration = vrchatapi.Configuration(
+        username = args.username,
+        password = args.password,
+    )
+    
+    #логинимся в аккаунт vrchat для обращения к api
+    api_client = vrchatapi.ApiClient(configuration)
+    api_instance = authentication_api.AuthenticationApi(api_client) 
+    api_client.user_agent = "doingAThing/1.0 notreal@email.com"
+    try:
+        # Step 3. Calling getCurrentUser on Authentication API logs you in if the user isn't already logged in.
+        current_user = api_instance.get_current_user()
+    except ValueError as e:
+        # Step 3.5. Calling verify2fa if the account has 2FA enabled
+        api_instance.verify2_fa_email_code(two_factor_email_code=TwoFactorEmailCode(input("2FA Code: ")))
+        current_user = api_instance.get_current_user()
+    except UnauthorizedException as e:
+        if e.status == 200:
+            # Step 3.5. Calling verify2fa if the account has 2FA enabled
+            api_instance.verify2_fa(two_factor_auth_code=TwoFactorAuthCode(input("2FA Code: ")))
+            current_user = api_instance.get_current_user()
+        else:
+            print("Exception when calling API: %s\n", e)
+    except vrchatapi.ApiException as e:
+        print("Exception when calling API: %s\n", e)
+
+    #все, залогинились, идем дальше
+
 if not args.classify:
     exportIt()
+
     if not args.nonaming:
         nameIt()
-    unpackIt()
-classifyIt()
+        with open(f"{outputDir}\\avatarManifest.json", 'w') as manifestFile:
+            json.dump(avatarIdWithName, manifestFile, indent=4)
+
+    if not dontUnpackAssets:
+        unpackIt()
+        classifyIt() #nothing to classify if nothing is unpacked
+    else:
+        print("--nounpack given, skipping unpacking...")
+
+
+
 
