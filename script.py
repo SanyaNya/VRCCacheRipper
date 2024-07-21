@@ -252,17 +252,23 @@ if not args.nonaming:
         current_user = api_instance.get_current_user()
     except ValueError as e:
         # Step 3.5. Calling verify2fa if the account has 2FA enabled
-        api_instance.verify2_fa_email_code(two_factor_email_code=TwoFactorEmailCode(input("2FA Code: ")))
-        current_user = api_instance.get_current_user()
+        try:
+            api_instance.verify2_fa_email_code(two_factor_email_code=TwoFactorEmailCode(input("2FA Code: ")))
+            current_user = api_instance.get_current_user()
+        except vrchatapi.ApiException as e:
+            print("Exception when calling API: ", e)
     except UnauthorizedException as e:
         if e.status == 200:
             # Step 3.5. Calling verify2fa if the account has 2FA enabled
-            api_instance.verify2_fa(two_factor_auth_code=TwoFactorAuthCode(input("2FA Code: ")))
-            current_user = api_instance.get_current_user()
+            try:
+                api_instance.verify2_fa(two_factor_auth_code=TwoFactorAuthCode(input("2FA Code: ")))
+                current_user = api_instance.get_current_user()
+            except vrchatapi.ApiException as e:
+                print("Exception when calling API: ", e)
         else:
-            print("Exception when calling API: %s\n", e)
+            print("Exception when calling API: ", e)
     except vrchatapi.ApiException as e:
-        print("Exception when calling API: %s\n", e)
+        print("Exception when calling API: ", e)
 
     #все, залогинились, идем дальше
 
