@@ -137,12 +137,12 @@ def run_asr(tsk,lst):
         dst= outputDir +f"\\{lst[tsk[o]]}"
         out= f'{outputDir}\\exported\\{lst[tsk[o]]}'
         r = subprocess.run([assetripperPath, dst,'-o',out],input='\n', encoding='ascii',stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+
         while lock.locked():
             pass #wait to unlock lock by other thread
         with lock:
             ctr+=1
-        if ctr%args.j == 0 and ctr//args.j <= cnt:
-            print(f"Unpacked: {ctr//args.j} files, {((ctr//args.j)*100/cnt):0.2f}%")
+            print(f"Unpacked: {ctr} files, {(ctr*100/cnt):0.2f}%")
 
 
 def exportIt():
@@ -183,7 +183,11 @@ def unpackIt():
     global cnt
     thr=[]
     ld= os.listdir(outputDir)
-    tasks=[[]]*args.j #create threads task list
+
+    #create threads task list
+    tasks = []
+    for i in range(args.j):
+        tasks.append([])
 
     #split by threads:
     cnt=len(ld)-1
