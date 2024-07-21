@@ -146,6 +146,8 @@ def run_asr(tsk,lst):
 
 
 def exportIt():
+    print("\nExtracting vrc files")
+
     directories = os.listdir(cacheDir) #рекурсивно ищем папки в кеше vrchat'а
     #print(directories)
     get_path(cacheDir)
@@ -177,34 +179,36 @@ def exportIt():
         print(f"exported:{procent:0.2f}% ({i+1} files)")
 
 def unpackIt():
-        global cnt
-        thr=[]
-        ld= os.listdir(outputDir)
-        tasks=[[]]*args.j #create threads task list
+    print("\nUnpacking vrca files")
+    global cnt
+    thr=[]
+    ld= os.listdir(outputDir)
+    tasks=[[]]*args.j #create threads task list
 
-        #split by threads:
-        cnt=len(ld)-1
-        for i in range(cnt):
-            tasks[i%(args.j)].append(i)
+    #split by threads:
+    cnt=len(ld)-1
+    for i in range(cnt):
+        tasks[i%(args.j)].append(i)
 
-        #create dirs
-        try:
-            os.mkdir(outputDir+f"\\exported\\{ld[i]}")
-        except FileExistsError:
-            pass
-        except FileNotFoundError:
-            os.mkdir(outputDir+"\\exported")
-            os.mkdir(outputDir+f"\\exported\\{ld[i]}")
+    #create dirs
+    try:
+        os.mkdir(outputDir+f"\\exported\\{ld[i]}")
+    except FileExistsError:
+        pass
+    except FileNotFoundError:
+        os.mkdir(outputDir+"\\exported")
+        os.mkdir(outputDir+f"\\exported\\{ld[i]}")
 
-        #start threads
-        for l in range(args.j):
-            thr.append(Thread(target=run_asr,args=[tasks[l],ld]))
-            thr[l].start()
-        for x in range(args.j):
-            thr[x].join()
+    #start threads
+    for l in range(args.j):
+        thr.append(Thread(target=run_asr,args=[tasks[l],ld]))
+        thr[l].start()
+    for x in range(args.j):
+        thr[x].join()
 
 
 def nameIt():
+    print("\nNaming vrca files")
     for f in os.listdir(outputDir):
         #из распакованных папок берем avtr_id, через vrchat api запрашиваем имя аватара, если получаем ответ то переименовываем папку
         if str(f).startswith("avtr_"):
@@ -219,7 +223,7 @@ def nameIt():
                     pass
 
 
-print("starting...(This Might take a while.....)")
+print("starting...(This Might take a while.....)\n")
 
 #check for assetripper BEFORE Login
 if args.input == None:
@@ -291,3 +295,5 @@ if not dontUnpackAssets:
     unpackIt()
 else:
     print("--nounpack given, skipping unpacking...")
+
+print()
