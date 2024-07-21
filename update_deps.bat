@@ -22,4 +22,3 @@ pip install vrchatapi
 call ./vrcrip/Scripts/deactivate.bat
 echo.
 echo ---------------DONE!-------------
-pause
