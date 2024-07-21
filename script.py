@@ -40,6 +40,7 @@ valid = []
 cnt =0
 ctr =0 
 lock = Lock()
+should_login = False
 
 pattern_a=re.compile(rb"avtr_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
 pattern_w=re.compile(rb"wrld_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
@@ -83,7 +84,7 @@ def getCachePath(): #ищем путь к кешу и если не находи
         return Cachepath
 
 def goodbye():                      #функция выхода, выходим из аккаунта vrchat (иначе плохо всё кончится)
-    if not args.nonaming:
+    if should_login:
         # Logout
         try:
             api_instance = authentication_api.AuthenticationApi(api_client)
@@ -259,6 +260,16 @@ else:
 
 #vrc login
 if not args.nonaming:
+    should_login = True
+    if args.username == "" and args.password == "":
+        should_login = input("Enable naming feature(vrchat account is needed for it)? (Submit yes or no for answer): ") == "yes"
+
+if should_login:
+    print("Naming: Enabled")
+else:
+    print("Naming: Disabled")
+
+if should_login:
     if args.username == "":
         args.username = input("Username: ")
     if args.password == "":
@@ -307,7 +318,7 @@ atexit.register(goodbye)
 
 exportIt()
 
-if not args.nonaming:
+if should_login:
     nameIt()
 
 if not dontUnpackAssets:
