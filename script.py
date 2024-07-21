@@ -139,18 +139,21 @@ def run_asr(tsk,lst):
         r = subprocess.run([assetripperPath, dst,'-o',out],input='\n', encoding='ascii',stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
 
         #Prepare files for facs
-        newdir = f'{outputDir}\\exported\\Assets_{lst[tsk[o]]}'
-        shutil.copytree(f'{out}\\ExportedProject\\Assets', newdir, dirs_exist_ok=True)
-        shutil.rmtree(out)
         try:
-            os.rename(f"{newdir}\\Scripts", f"{newdir}\\.Scripts")
+            newdir = f'{outputDir}\\exported\\Assets_{lst[tsk[o]]}'
+            shutil.copytree(f'{out}\\ExportedProject\\Assets', newdir, dirs_exist_ok=True)
+            shutil.rmtree(out)
+            try:
+                os.rename(f"{newdir}\\Scripts", f"{newdir}\\.Scripts")
+            except Exception:
+                pass
+            try:
+                os.rename(f"{newdir}\\Shader", f"{newdir}\\.Shader")
+            except Exception:
+                pass
+            shutil.copytree("FACS_Utilities", f"{newdir}\\FACS_Utilities", dirs_exist_ok=True)
         except Exception:
             pass
-        try:
-            os.rename(f"{newdir}\\Shader", f"{newdir}\\.Shader")
-        except Exception:
-            pass
-        shutil.copytree("FACS_Utilities", f"{newdir}\\FACS_Utilities", dirs_exist_ok=True)
 
         while lock.locked():
             pass #wait to unlock lock by other thread
