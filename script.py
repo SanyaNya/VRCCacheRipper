@@ -287,9 +287,6 @@ exportIt()
 
 if not args.nonaming:
     nameIt()
-    with open(f"{outputDir}\\avatarManifest.json", 'w') as manifestFile:
-        json.dump(avatarIdWithName, manifestFile, indent=4)
-    os.remove(f"{outputDir}\\avatarManifest.json")
 
 if not dontUnpackAssets:
     unpackIt()
