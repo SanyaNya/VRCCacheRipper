@@ -206,13 +206,13 @@ def unpackIt():
 
 def nameIt():
     for f in os.listdir(outputDir):
-        print(f) #из распакованных папок берем avtr_id, через vrchat api запрашиваем имя аватара, если получаем ответ то переименовываем папку
+        #из распакованных папок берем avtr_id, через vrchat api запрашиваем имя аватара, если получаем ответ то переименовываем папку
         if str(f).startswith("avtr_"):
             avatar_name = getname_a(f)
             if(avatar_name != None):
                 try:
                     print(f+" name: "+avatar_name)
-                    os.rename(outputDir+"\\"+f, outputDir+"\\"+get_valid_filename(avatar_name))
+                    os.replace(outputDir+"\\"+f, outputDir+"\\"+get_valid_filename(avatar_name))
                 except PermissionError as e:
                     pass
                 except FileExistsError as e:
