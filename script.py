@@ -133,7 +133,6 @@ def get_path(dir):          #ммм, рекурсия :3
 def run_asr(tsk,lst):
     global ctr
     for o in  range(len(tsk)):
-        
         dst= outputDir +f"\\{lst[tsk[o]]}"
         out= f'{outputDir}\\exported\\{lst[tsk[o]]}'
         r = subprocess.run([assetripperPath, dst,'-o',out],input='\n', encoding='ascii',stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
@@ -195,7 +194,7 @@ def unpackIt():
     print("\nUnpacking vrca files")
     global cnt
     thr=[]
-    ld= os.listdir(outputDir)
+    ld = [ f for f in os.listdir(outputDir) if os.path.isfile(os.path.join(outputDir, f)) ]
 
     #create threads task list
     tasks = []
