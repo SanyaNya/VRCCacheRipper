@@ -149,7 +149,7 @@ def run_asr(tsk,lst):
             os.rename(f"{newdir}\\Shader", f"{newdir}\\.Shader")
         except Exception:
             pass
-        shutil.copytree("FACS_Utilities", f"{newdir}\\FACS_Utilities")
+        shutil.copytree("FACS_Utilities", f"{newdir}\\FACS_Utilities", dirs_exist_ok=True)
 
         while lock.locked():
             pass #wait to unlock lock by other thread
