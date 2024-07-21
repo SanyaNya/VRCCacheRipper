@@ -27,7 +27,7 @@ parser.add_argument("--nonaming", action="store_true",help="wether or not name a
 parser.add_argument("-u","--username", type=str,help="username of vrc account for avatar naming, if you dont want use this, use --nonaming",required=not '--nonaming' in sys.argv)
 parser.add_argument("-p","--password", type=str,help="password of vrc account for avatar naming, if you dont want use this, use --nonaming",required=not '--nonaming' in sys.argv)
 parser.add_argument("-v","--verbose", action="store_true",help="verbose the output", required=False)
-parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(default 60MB)", required=False, default=60)
+parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(default 60MB)", required=False, default=1000000)
 parser.add_argument("-j","--j", type=int,help="how many threads to use(default=4)", required=False, default=4)
 parser.add_argument("-mins","--minsize", type=int,help="mminimum size of avatar in MB(default 0MB)", required=False, default=0)
 parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default="./AssetRipper/AssetRipper-Console.exe")
