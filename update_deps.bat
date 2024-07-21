@@ -1,5 +1,5 @@
 
-powershell -Command "Invoke-WebRequest https://aka.ms/dotnet/8.0/preview/dotnet-runtime-win-x64.exe -OutFile dotnet.exe"
+powershell -Command "Invoke-WebRequest https://aka.ms/dotnet/8.0/dotnet-sdk-win-x64.exe -OutFile dotnet.exe"
 dotnet.exe /install /quiet /norestart
 del dotnet.exe
 
