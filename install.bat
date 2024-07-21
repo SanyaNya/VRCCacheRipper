@@ -1,6 +1,10 @@
 
-powershell -Command "Invoke-WebRequest https://github.com/AssetRipper/AssetRipper/releases/download/0.3.0.5/AssetRipper_win_x64.zip -OutFile package.zip"
-tar -xvf package.zip
+powershell -Command "Invoke-WebRequest https://github.com/SanyaNya/AssetRipper/releases/download/1.0.18-r23/AssetRipper-Console-win-x64-1.0.18-r23.zip -OutFile package.zip"
+mkdir AssetRipper
+cd AssetRipper
+tar -xvf ..\package.zip
+cd ..
+del package.zip
 python -m venv vrcrip
 call ./vrcrip/Scripts/activate.bat
 pip install vrchatapi

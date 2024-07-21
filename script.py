@@ -30,7 +30,7 @@ parser.add_argument("-v","--verbose", action="store_true",help="verbose the outp
 parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(default 60MB)", required=False, default=60)
 parser.add_argument("-j","--j", type=int,help="how many threads to use(default=4)", required=False, default=4)
 parser.add_argument("-mins","--minsize", type=int,help="mminimum size of avatar in MB(default 0MB)", required=False, default=0)
-parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default="./AssetRipper.exe")
+parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default="./AssetRipper/AssetRipper-Console.exe")
 parser.add_argument("-clsf","--classify", action="store_true",help="dont unpack, only classify and name", required=False)
 parser.add_argument("--nounpack", action="store_true", help="Prevent unpacking of assets", required=False)
 args = parser.parse_args()
@@ -290,8 +290,8 @@ asr = Path(assetripperPath)
 if asr.exists() or dontUnpackAssets:
     pass
 else:
-    print("Cant find assetripper.exe! to get it download it from https://github.com/AssetRipper/AssetRipper/releases/0.3.0.5 , unpack zip and put this script into extracted folder")
-    raise FileNotFoundError("Cant find AssetRipper! Put this script into AssetRipper folder, or use '-asr [path to AssetRipper.exe]'")
+    print("Cant find assetripper.exe!")
+    raise FileNotFoundError("Cant find AssetRipper! Use '-asr [path to AssetRipper.exe]'")
 
 #vrc login
 if not args.nonaming:
