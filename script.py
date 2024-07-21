@@ -31,7 +31,6 @@ parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(d
 parser.add_argument("-j","--j", type=int,help="how many threads to use(default=4)", required=False, default=4)
 parser.add_argument("-mins","--minsize", type=int,help="mminimum size of avatar in MB(default 0MB)", required=False, default=0)
 parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default="./AssetRipper/AssetRipper-Console.exe")
-parser.add_argument("-clsf","--classify", action="store_true",help="dont unpack, only classify and name", required=False)
 parser.add_argument("--nounpack", action="store_true", help="Prevent unpacking of assets", required=False)
 args = parser.parse_args()
 
@@ -219,61 +218,6 @@ def nameIt():
                 except FileExistsError as e:
                     pass
 
-def classify(src):
-    avat = src + "\ExportedProject\Assets\Avatar"
-    ls=os.listdir(avat)
-    for str in ls:
-        if "Nardo" in str:
-            return "(nardo)_"
-        elif "Re" in str:
-            return "(rex)_"
-        elif "Wicker" in str:
-            return "(wicker)_"
-        elif "Can" in str:
-            return "(canine)_"
-        elif "Taidum" in str:
-            return "(taidum)_"
-        elif "Angel" in str:
-            return "(dutchie)_"
-        elif "Pro" in str:
-            return "(proto)_"
-        elif "avali" in str:
-            return "(avali)_"
-        else:
-            pass
-    anim = src + "\ExportedProject\Assets\AnimationClip"
-    ls = os.listdir(anim)
-    for str in ls:
-        if "dragon" in str:
-            return "(nardo)_"
-        elif "rex" in str:
-            return "(rex)_"
-        else: return ""
-    tex = src + "\ExportedProject\Assets\Texture2D"
-    ls = os.listdir(tex)
-    for str in ls:
-        if "dragon" in str:
-            return "(nardo)_"
-        elif "Rex" in str:
-            return "(rex)_"
-        else: return ""
-
-def classifyIt():
-    wd = outputDir+"\exported\\"
-    files = os.listdir(wd)
-    for i in range(0,len(files)):
-        try:
-            speicie = classify(wd+files[i])
-            os.rename(wd+files[i], wd+speicie+files[i])
-        except PermissionError as e:
-            print('renaming failed', e)
-            f = open(outputDir+f"\exported\__Names.txt", "a")
-            f.write(str(f'{i}:type: {speicie}\n'))
-            f.close()
-            pass
-        except Exception as e:
-            pass
-
 
 print("starting...(This Might take a while.....)")
 
@@ -322,19 +266,17 @@ if not args.nonaming:
 
     #все, залогинились, идем дальше
 
-if not args.classify:
-    exportIt()
+exportIt()
 
-    if not args.nonaming:
-        nameIt()
-        with open(f"{outputDir}\\avatarManifest.json", 'w') as manifestFile:
-            json.dump(avatarIdWithName, manifestFile, indent=4)
+if not args.nonaming:
+    nameIt()
+    with open(f"{outputDir}\\avatarManifest.json", 'w') as manifestFile:
+        json.dump(avatarIdWithName, manifestFile, indent=4)
 
-    if not dontUnpackAssets:
-        unpackIt()
-        classifyIt() #nothing to classify if nothing is unpacked
-    else:
-        print("--nounpack given, skipping unpacking...")
+if not dontUnpackAssets:
+    unpackIt()
+else:
+    print("--nounpack given, skipping unpacking...")
 
 
 
