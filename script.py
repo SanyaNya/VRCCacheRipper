@@ -41,6 +41,7 @@ cnt =0
 ctr =0 
 lock = Lock()
 should_login = False
+should_unpack = True
 
 pattern_a=re.compile(rb"avtr_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
 pattern_w=re.compile(rb"wrld_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
@@ -246,6 +247,11 @@ def nameIt():
 
 print("starting...(This Might take a while.....)\n")
 
+if args.nounpack:
+    should_unpack = False
+else:
+    should_unpack = input("Unpack avatars? (Submit yes or no for answer): ") != "no"
+
 #check for assetripper BEFORE Login
 if args.input == None:
     cacheDir=getCachePath()+"\\"
@@ -253,9 +259,8 @@ else:
     cacheDir=args.input+"\\"
 outputDir =args.output
 assetripperPath = args.assetripper
-dontUnpackAssets = args.nounpack
 asr = Path(assetripperPath)
-if asr.exists() or dontUnpackAssets:
+if asr.exists() or not should_unpack:
     pass
 else:
     print("Cant find AssetRipper! Use '-asr [path to AssetRipper.exe]'")
@@ -324,9 +329,9 @@ exportIt()
 if should_login:
     nameIt()
 
-if not dontUnpackAssets:
+if should_unpack:
     unpackIt()
 else:
-    print("--nounpack given, skipping unpacking...")
+    print("Skipping unpacking...")
 
 print()
