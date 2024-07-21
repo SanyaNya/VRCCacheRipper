@@ -61,19 +61,19 @@ def get_id(file):
 
 def getCachePath(): #ищем путь к кешу и если не находи, то кидаем эксепшон
     path = os.getenv('APPDATA')
-    path = path.removesuffix("\Roaming")
-    path+="\LocalLow\VRChat\VRChat"
+    path = path.removesuffix("\\Roaming")
+    path+="\\LocalLow\\VRChat\\VRChat"
     try:
-        os.listdir(path+"\Cache-WindowsPlayer")
-        Cachepath = path+"\Cache-WindowsPlayer"
+        os.listdir(path+"\\Cache-WindowsPlayer")
+        Cachepath = path+"\\Cache-WindowsPlayer"
     except:
         try:
-            f =open(path+"\config.json","r")
+            f =open(path+"\\config.json","r")
             res= ''
             for i in f.read().splitlines():
                 res+=i
             f.close()
-            Cachepath =json.loads(res)["cache_directory"] +"\Cache-WindowsPlayer"
+            Cachepath =json.loads(res)["cache_directory"] +"\\Cache-WindowsPlayer"
         except (FileNotFoundError, KeyError):
             Cachepath = None
     if Cachepath == None:
@@ -134,8 +134,8 @@ def run_asr(tsk,lst):
     global ctr
     for o in  range(len(tsk)):
         
-        dst= outputDir +f"\{lst[tsk[o]]}"
-        out= f'{outputDir}\exported\{lst[tsk[o]]}'
+        dst= outputDir +f"\\{lst[tsk[o]]}"
+        out= f'{outputDir}\\exported\\{lst[tsk[o]]}'
         r = subprocess.run([assetripperPath, dst,'-o',out],input='\n', encoding='ascii',stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
         while lock.locked():
             pass #wait to unlock lock by other thread
@@ -189,12 +189,12 @@ def unpackIt():
 
         #create dirs
         try:
-            os.mkdir(outputDir+f"\exported\{ld[i]}")
+            os.mkdir(outputDir+f"\\exported\\{ld[i]}")
         except FileExistsError:
             pass
         except FileNotFoundError:
-            os.mkdir(outputDir+"\exported")
-            os.mkdir(outputDir+f"\exported\{ld[i]}")
+            os.mkdir(outputDir+"\\exported")
+            os.mkdir(outputDir+f"\\exported\\{ld[i]}")
 
         #start threads
         for l in range(args.j):
@@ -277,7 +277,3 @@ if not dontUnpackAssets:
     unpackIt()
 else:
     print("--nounpack given, skipping unpacking...")
-
-
-
-
