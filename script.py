@@ -21,7 +21,7 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 parser = MyParser()
-parser.add_argument("-o","--output", type=str,help="output path for unpacking avatars", required=False, default="./Ripped")
+parser.add_argument("-o","--output", type=str,help="output path for unpacking avatars", required=False, default=".\\Ripped")
 parser.add_argument("-i","--input", type=str,help="path to cache of vrchat(Cache-WindowsPlayer)")
 parser.add_argument("--nonaming", action="store_true",help="wether or not name avatars", required=False)
 parser.add_argument("-u","--username", type=str,help="username of vrc account for avatar naming, if you dont want use this, use --nonaming", required=False, default="")
@@ -30,7 +30,7 @@ parser.add_argument("-v","--verbose", action="store_true",help="verbose the outp
 parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(default 60MB)", required=False, default=1000000)
 parser.add_argument("-j","--j", type=int,help="how many threads to use(default=4)", required=False, default=4)
 parser.add_argument("-mins","--minsize", type=int,help="mminimum size of avatar in MB(default 0MB)", required=False, default=0)
-parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default="./AssetRipper/AssetRipper-Console.exe")
+parser.add_argument("-asr","--assetripper", type=str,help="path to assetripper.exe", required=False, default=".\\AssetRipper\\AssetRipper-Console.exe")
 parser.add_argument("--nounpack", action="store_true", help="Prevent unpacking of assets", required=False)
 args = parser.parse_args()
 
