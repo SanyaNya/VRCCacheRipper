@@ -182,28 +182,27 @@ def unpackIt():
         thr=[]
         ld= os.listdir(outputDir)
         tasks=[[]]*args.j #create threads task list
-        #for y in range(args.j-1):
-        #    tasks[y].append([None])
+
+        #split by threads:
         cnt=len(ld)-1
-        for i in range(cnt):         #создаем папки и распаковываем туда .vrca с помощью ассетриппера
-            #split by threads:
+        for i in range(cnt):
             tasks[i%(args.j)].append(i)
-            #print(tasks[0]) # seems to just print a bunch of numbers?
-            #print(outputDir+f"\exported\{i}")
-            try:
-                os.mkdir(outputDir+f"\exported\{ld[i]}")
-            except FileExistsError:
-                pass
-            except FileNotFoundError:
-                os.mkdir(outputDir+"\exported")
-                os.mkdir(outputDir+f"\exported\{ld[i]}")
-            #print([assetripperDir, dst,f'-o {outputDir}\exported\{i}'])
-            for l in range(args.j):
-                thr.append(Thread(target=run_asr,args=[tasks[l],ld]))
-                thr[l].start()
-            for x in range(args.j):
-                thr[x].join()
-        #print(f"Unpacked:{procent:0.2f}% ({i+1} files)")
+
+        #create dirs
+        try:
+            os.mkdir(outputDir+f"\exported\{ld[i]}")
+        except FileExistsError:
+            pass
+        except FileNotFoundError:
+            os.mkdir(outputDir+"\exported")
+            os.mkdir(outputDir+f"\exported\{ld[i]}")
+
+        #start threads
+        for l in range(args.j):
+            thr.append(Thread(target=run_asr,args=[tasks[l],ld]))
+            thr[l].start()
+        for x in range(args.j):
+            thr[x].join()
 
 
 def nameIt():
