@@ -1,4 +1,8 @@
 
+powershell -Command "Invoke-WebRequest https://download.visualstudio.microsoft.com/download/pr/d1adccfa-62de-4306-9410-178eafb4eeeb/48e3746867707de33ef01036f6afc2c6/dotnet-sdk-8.0.303-win-x64.exe -OutFile dotnetsdk.exe"
+dotnetsdk.exe /install /quiet /norestart
+del dotnetsdk.exe
+
 powershell -Command "Invoke-WebRequest https://github.com/SanyaNya/AssetRipper/releases/download/1.0.18-r23/AssetRipper-Console-win-x64-1.0.18-r23.zip -OutFile package.zip"
 rmdir /Q /S AssetRipper
 mkdir AssetRipper
