@@ -24,8 +24,8 @@ parser = MyParser()
 parser.add_argument("-o","--output", type=str,help="output path for unpacking avatars", required=False, default="./Ripped")
 parser.add_argument("-i","--input", type=str,help="path to cache of vrchat(Cache-WindowsPlayer)")
 parser.add_argument("--nonaming", action="store_true",help="wether or not name avatars", required=False)
-parser.add_argument("-u","--username", type=str,help="username of vrc account for avatar naming, if you dont want use this, use --nonaming",required=not '--nonaming' in sys.argv)
-parser.add_argument("-p","--password", type=str,help="password of vrc account for avatar naming, if you dont want use this, use --nonaming",required=not '--nonaming' in sys.argv)
+parser.add_argument("-u","--username", type=str,help="username of vrc account for avatar naming, if you dont want use this, use --nonaming", required=False, default="")
+parser.add_argument("-p","--password", type=str,help="password of vrc account for avatar naming, if you dont want use this, use --nonaming", required=False, default="")
 parser.add_argument("-v","--verbose", action="store_true",help="verbose the output", required=False)
 parser.add_argument("-s","--size", type=int,help="maximum size of avatar in MB(default 60MB)", required=False, default=1000000)
 parser.add_argument("-j","--j", type=int,help="how many threads to use(default=4)", required=False, default=4)
@@ -259,6 +259,11 @@ else:
 
 #vrc login
 if not args.nonaming:
+    if args.username == "":
+        args.username = input("Username: ")
+    if args.password == "":
+        args.password = input("Password: ")
+
     configuration = vrchatapi.Configuration(
         username = args.username,
         password = args.password,
