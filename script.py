@@ -77,22 +77,22 @@ def getCachePath(): #ищем путь к кешу и если не находи
         except (FileNotFoundError, KeyError):
             Cachepath = None
     if Cachepath == None:
-        raise FileNotFoundError("Script can't find VRChat Cache folder automatically! try using with '-i [path to Cache-Windows-Player]'")
+        print("Script can't find VRChat Cache folder automatically! try using with '-i [path to Cache-Windows-Player]'")
+        sys.exit()
     else:
         return Cachepath
 
 def goodbye():                      #функция выхода, выходим из аккаунта vrchat (иначе плохо всё кончится)
     if not args.nonaming:
-        api_instance = authentication_api.AuthenticationApi(api_client)
-        # example, this endpoint has no required or optional parameters
+        # Logout
         try:
-            # Logout
-            api_response = api_instance.logout()
-            print(api_response)
+            api_instance = authentication_api.AuthenticationApi(api_client)
+            api_instance.logout()
         except vrchatapi.ApiException as e:
-            print("Exception when calling AuthenticationApi->logout: %s\n" % e)
+            print("Exception when calling AuthenticationApi->logout: ", e.reason)
+
     print("CacheRipper Finished... Goodbye!")
-atexit.register(goodbye)        #биндим эту функцию на выход
+
 
 def get_valid_filename(s):          #превращаем имена в нормальные
     s = str(s).strip().replace(' ', '_')
@@ -233,8 +233,8 @@ asr = Path(assetripperPath)
 if asr.exists() or dontUnpackAssets:
     pass
 else:
-    print("Cant find assetripper.exe!")
-    raise FileNotFoundError("Cant find AssetRipper! Use '-asr [path to AssetRipper.exe]'")
+    print("Cant find AssetRipper! Use '-asr [path to AssetRipper.exe]'")
+    sys.exit()
 
 #vrc login
 if not args.nonaming:
@@ -256,7 +256,8 @@ if not args.nonaming:
             api_instance.verify2_fa_email_code(two_factor_email_code=TwoFactorEmailCode(input("2FA Code: ")))
             current_user = api_instance.get_current_user()
         except vrchatapi.ApiException as e:
-            print("Exception when calling API: ", e)
+            print("Exception when calling API: ", e.reason)
+            sys.exit()
     except UnauthorizedException as e:
         if e.status == 200:
             # Step 3.5. Calling verify2fa if the account has 2FA enabled
@@ -264,13 +265,19 @@ if not args.nonaming:
                 api_instance.verify2_fa(two_factor_auth_code=TwoFactorAuthCode(input("2FA Code: ")))
                 current_user = api_instance.get_current_user()
             except vrchatapi.ApiException as e:
-                print("Exception when calling API: ", e)
+                print("Exception when calling API: ", e.reason)
+                sys.exit()
         else:
-            print("Exception when calling API: ", e)
+            print("Exception when calling API: ", e.reason)
+            sys.exit()
     except vrchatapi.ApiException as e:
-        print("Exception when calling API: ", e)
+        print("Exception when calling API: ", e.reason)
+        sys.exit()
 
     #все, залогинились, идем дальше
+
+#register logout at exit
+atexit.register(goodbye)
 
 exportIt()
 
