@@ -58,7 +58,7 @@ def get_id(file):
                 return "wrld_"+str(pattern_w.findall(s)[0])[2:-1:]
             except:
                 if len(missing) > 0:
-                    print("Missing final avi character!")
+                    print("Missing ID!")
                 return None
 
 def getCachePath(): #ищем путь к кешу и если не находи, то кидаем эксепшон
