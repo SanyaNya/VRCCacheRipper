@@ -166,13 +166,11 @@ def run_asr(tsk,lst):
 def exportIt():
     print("\nExtracting vrc files")
 
-    directories = os.listdir(cacheDir) #рекурсивно ищем папки в кеше vrchat'а
-    #print(directories)
+    directories = [ name for name in os.listdir(cacheDir) if os.path.isdir(os.path.join(cacheDir, name)) ]
     get_path(cacheDir)
     for i in reversed(pathes):
         if os.listdir(i) == []:
             pathes.remove(i)
-    pathes.pop(-1)
 
     for p in pathes:                    #из всех файлов выбираем предположительно аватары
         for j in os.listdir(p):
