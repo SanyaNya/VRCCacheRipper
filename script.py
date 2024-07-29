@@ -206,7 +206,7 @@ def unpackIt():
         tasks.append([])
 
     #split by threads:
-    cnt=len(ld)-1
+    cnt=len(ld)
     for i in range(cnt):
         tasks[i%(args.j)].append(i)
 
