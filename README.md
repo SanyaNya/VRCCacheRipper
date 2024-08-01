@@ -3,6 +3,8 @@ Script that extracts avatars and worlds from vrc cache
 
 Русская документация: [Тык](Rudoc.md)
 
+# DISCLAIMER: this tool is intended only to recover YOUR OWN avatars/worlds that you have lost source files from, but still have in your cache. The author is not responsible for stealing other people's avatars/worlds
+
 # Usage
 Just run ripper.bat
 
