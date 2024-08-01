@@ -11,12 +11,14 @@ tar -xvf ..\package.zip
 cd ..
 del package.zip
 
-powershell -Command "Invoke-WebRequest https://github.com/FACS01-01/FACS_Utilities/releases/download/24.05.03/FACS.Utilities.24.05.03.zip -OutFile package.zip"
+powershell -Command "Invoke-WebRequest https://github.com/SanyaNya/FACS_Utilities/archive/refs/heads/fix-crash-object-without-shaders.zip -OutFile package.zip"
 rmdir /Q /S FACS_Utilities
-mkdir FACS_Utilities
-cd FACS_Utilities
+mkdir FACS
+cd FACS
 tar -xvf ..\package.zip
+move "FACS_Utilities-fix-crash-object-without-shaders\com.facs01.utilities" ..\FACS_Utilities
 cd ..
+rmdir /Q /S FACS
 del package.zip
 
 rmdir /Q /S vrcrip
