@@ -3,7 +3,7 @@ powershell -Command "Invoke-WebRequest https://aka.ms/dotnet/8.0/dotnet-sdk-win-
 dotnet.exe /install /quiet /norestart
 del dotnet.exe
 
-powershell -Command "Invoke-WebRequest https://github.com/SanyaNya/AssetRipper/releases/download/1.0.18-r23/AssetRipper-Console-win-x64-1.0.18-r23.zip -OutFile package.zip"
+powershell -Command "Invoke-WebRequest https://github.com/SanyaNya/AssetRipper/releases/download/1.1.1-r2/AssetRipper-Console-win-x64-1.1.1-r2.zip -OutFile package.zip"
 rmdir /Q /S AssetRipper
 mkdir AssetRipper
 cd AssetRipper
